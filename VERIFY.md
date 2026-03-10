@@ -76,3 +76,29 @@ npm install --save-dev @nomicfoundation/hardhat-verify
 ```bash
 npx hardhat verify --network unichain <CONTRACT_ADDRESS>
 ```
+
+## Etherscan API V2 测试结果
+
+### 测试结果
+
+```json
+{"status":"0","message":"NOTOK","result":"Error!"}
+```
+
+### 问题
+
+Etherscan API V2 虽然支持 Unichain Sepolia (chainid: 1301)，但验证功能返回通用错误。
+
+### 原因
+
+- Unichain Sepolia 使用 Blockscout 作为浏览器
+- Etherscan API 对 Multichain 的验证支持有限
+
+### 建议
+
+**推荐手动验证**:
+1. 打开 https://sepolia.uniscan.xyz/address/0x6B286ebAfb5eDBd8D4552A1060fF2b0BC2b0EC51
+2. 点击 Contract → Verify & Publish
+3. 上传源码
+
+或者使用 Tenderly 进行验证（如果有 Tenderly 账户）。
