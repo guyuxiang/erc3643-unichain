@@ -1,82 +1,194 @@
-# ERC-3643 Implementation on Unichain Sepolia
+# ERC-3643 代币化证券标准实现
 
-> Complete ERC-3643 (T-REX) standard token deployment with full Claims verification
+> 基于 Unichain Sepolia 测试网的完整 ERC-3643 (T-REX) 标准实现
 
-## Overview
+---
 
-This project implements the **complete** ERC-3643 standard for security tokens on Unichain Sepolia testnet, including:
-- Full Identity (ONCHAINID) contracts
-- Claims verification (KYC)
-- Trusted Issuers Registry
-- Compliance modules
+## 什么是 ERC-3643？
 
-## Deployed Contracts
+ERC-3643 是一个用于**合规代币化证券**的以太坊标准。它专为需要遵守证券法规的代币设计，与普通 Utility 代币不同，证券代币必须是**许可制**的——只有经过授权的投资者才能持有和交易。
 
-| Contract | Address |
-|----------|---------|
-| Token | `0x6B286ebAfb5eDBd8D4552A1060fF2b0BC2b0EC51` |
-| IdentityRegistry | `0x48966d61b20e7a680dfda96d53c9D7D6A566d3E9` |
-| ModularCompliance | `0x2eef320EaD21bE8c767761187496aB465bBC5Dd3` |
-| ClaimTopicsRegistry | `0xCA17fF41E55F03CFef64d898a5f6106A562Ab29e` |
-| TrustedIssuersRegistry | `0x622249bf42135e5C537E83def29141a9917B3d21` |
-| ClaimIssuer | `0xDC3f95D359C3Fb6d906aF3291D8F7610c159950e` |
+### 核心特点
 
-## Identity Contracts (ONCHAINID)
+| 特点 | 说明 |
+|------|------|
+| 🔐 **许可制** | 只有经过 KYC 验证的投资者才能持有 |
+| 📋 **合规性** | 自动执行转账合规规则 |
+| 🆔 **链上身份** | 基于去中心化身份 (DID) |
+| 🏛️ **模块化** | 灵活适配不同司法管辖区的法规 |
 
-| Investor | Identity Address | Country | Claims |
-|----------|-----------------|---------|--------|
-| A (USA) | `0x41C861e3d535Bee3e991C73A73a5c9Ea428E3E5F` | 840 | ✅ KYC |
-| B (France) | `0x71765Da072c89094A601a57B885b1bE185dF148B` | 250 | ✅ KYC |
-| C (Germany) | `0x630c159d3aa8D57D3aCb45557e578aB834065837` | 276 | ✅ KYC |
+---
 
-## Compliance Rules
-
-| Country | Code | Rule |
-|---------|------|------|
-| USA | 840 | ❌ Cannot send |
-| Germany | 276 | ❌ Cannot receive |
-| France | 250 | ✅ Normal |
-
-## Full Claims Verification Flow
+## 架构概览
 
 ```
-transferFrom(sender, receiver, amount)
-    ↓
-1. Token checks (paused, frozen, balance)
-    ↓
-2. IdentityRegistry.isVerified(receiver)
-    ├── Get Identity contract
-    ├── Check Claims exist (KYC Topic 1)
-    └── Verify Claims signed by Trusted Issuer
-    ↓
-3. Compliance.canTransfer()
-    └── CountryRestrictModule checks
+┌─────────────────────────────────────────────────────────────────────────┐
+│                          Token (ERC-3643)                              │
+│                    0x6B286ebAfb5eDBd8D4552A1060fF2b0BC2b0EC51        │
+└─────────────────────────────────────────────────────────────────────────┘
+                                    │
+          ┌─────────────────────────┴─────────────────────────┐
+          │                                                  │
+          ▼                                                  ▼
+┌─────────────────────────────┐              ┌─────────────────────────────┐
+│    IdentityRegistry        │              │   ModularCompliance      │
+│   身份注册表               │              │   模块化合规引擎          │
+│                            │              │                            │
+│  • KYC 验证               │              │  • 国别限制               │
+│  • 国家代码管理            │              │  • 投资者数量限制          │
+│  • Identity 绑定          │              │  • 持仓上限              │
+└─────────────────────────────┘              └─────────────────────────────┘
+          │
+          ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                    Claim Topics Registry                              │
+│                         声明主题注册表                                 │
+│                                                                      │
+│   [1] KYC - 身份验证                                               │
+│   [2] AML - 反洗钱检查                                             │
+│   [3] Accredited Investor - 合格投资者                              │
+│   [4] Country Restriction - 国别限制                                │
+└─────────────────────────────────────────────────────────────────────┘
+          │
+          ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                  Trusted Issuers Registry                            │
+│                       可信发行者注册表                                │
+│                                                                      │
+│   0xDC3f95D359C3Fb6d906aF3291D8F7610c159950e                     │
+└─────────────────────────────────────────────────────────────────────┘
+          │
+          ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                    Identity Contracts                                │
+│                      身份合约 (ONCHAINID)                            │
+│                                                                      │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐              │
+│  │ Identity A  │  │ Identity B  │  │ Identity C  │              │
+│  │ (USA, 840) │  │(France,250) │  │(Germany,276)│              │
+│  │  ✅ KYC    │  │  ✅ KYC    │  │  ✅ KYC    │              │
+│  └─────────────┘  └─────────────┘  └─────────────┘              │
+└─────────────────────────────────────────────────────────────────────┘
 ```
 
-## Test Results
+---
 
-| Test | Result |
-|------|--------|
+## 核心概念
+
+### 1. Identity (身份合约)
+
+每个投资者都有一个**链上身份合约** (ONCHAINID)，用于存储：
+- 管理密钥 (用于身份控制)
+- Claims (声明/凭证)
+
+### 2. Claims (声明)
+
+Claims 是由**可信发行者**签发的凭证，证明投资者满足特定要求：
+
+| Topic ID | 名称 | 描述 |
+|----------|------|------|
+| 1 | KYC | 身份验证已完成 |
+| 2 | AML | 反洗钱检查通过 |
+| 3 | Accredited | 合格投资者认证 |
+| 4 | Country | 国别限制 |
+
+### 3. ClaimIssuer (声明发行者)
+
+由 Token 发行方授权的实体，负责签发和管理 Claims。
+
+### 4. Compliance (合规模块)
+
+可插拔的合规规则引擎，检查转账是否符合法规要求。
+
+---
+
+## 转账验证流程
+
+```
+用户发起转账: transferFrom(sender, receiver, amount)
+    │
+    ├─→ 1. Token 合约检查
+    │       ├── paused? 代币是否暂停
+    │       ├── frozen? 钱包是否冻结
+    │       └── balance? 余额是否足够
+    │
+    ├─→ 2. IdentityRegistry.isVerified(receiver)
+    │       ├── 获取接收者的 Identity 合约
+    │       ├── 检查 Claims 是否存在
+    │       └── 验证 Claims 签发者是否可信
+    │
+    ├─→ 3. Compliance.canTransfer(sender, receiver)
+    │       └── 执行合规规则检查
+    │           └── 例如: 国别限制、持仓上限等
+    │
+    └─→ 4. 允许或拒绝转账
+```
+
+---
+
+## 我们的实现
+
+### 已部署合约
+
+| 合约 | 地址 | 说明 |
+|------|------|------|
+| **Token** | `0x6B286ebAfb5eDBd8D4552A1060fF2b0BC2b0EC51` | ERC-3643 代币 |
+| **IdentityRegistry** | `0x48966d61b20e7a680dfda96d53c9D7D6A566d3E9` | 身份注册表 |
+| **ModularCompliance** | `0x2eef320EaD21bE8c767761187496aB465bBC5Dd3` | 合规引擎 |
+| **ClaimTopicsRegistry** | `0xCA17fF41E55F03CFef64d898a5f6106A562Ab29e` | 声明主题 |
+| **TrustedIssuersRegistry** | `0x622249bf42135e5C537E83def29141a9917B3d21` | 可信发行者 |
+| **ClaimIssuer** | `0xDC3f95D359C3Fb6d906aF3291D8F7610c159950e` | KYC 发行者 |
+
+### Identity 合约
+
+| 投资者 | Identity 地址 | 国家 | KYC |
+|--------|---------------|------|-----|
+| A | `0x41C861e3d535Bee3e991C73A73a5c9Ea428E3E5F` | 美国 (840) | ✅ |
+| B | `0x71765Da072c89094A601a57B885b1bE185dF148B` | 法国 (250) | ✅ |
+| C | `0x630c159d3aa8D57D3aCb45557e578aB834065837` | 德国 (276) | ✅ |
+
+### 合规规则
+
+| 国家 | 代码 | 规则 |
+|------|------|------|
+| 美国 | 840 | ❌ 禁止发送 |
+| 德国 | 276 | ❌ 禁止接收 |
+| 法国 | 250 | ✅ 正常交易 |
+
+---
+
+## 测试结果
+
+| 测试项 | 结果 |
+|--------|------|
 | isVerified(A) | ✅ true |
 | isVerified(B) | ✅ true |
 | isVerified(C) | ✅ true |
-| A→B (blocked) | ✅ false |
-| B→C (blocked) | ✅ false |
-| B→A (allowed) | ✅ true |
+| A→B (USA 禁止发送) | ❌ 被阻止 |
+| B→C (德国 禁止接收) | ❌ 被阻止 |
+| B→A (允许) | ✅ 通过 |
 
-## Network
+**测试通过率: 100%**
 
-- **Network**: Unichain Sepolia
-- **ChainID**: 1301
-- **RPC**: `https://astrochain-sepolia.gateway.tenderly.co/5neqYQoinBsj3Cc3O36Dun`
-- **Explorer**: https://sepolia.uniscan.xyz
+---
 
-## Documentation
+## 网络信息
 
-- [Full Implementation](./docs/ERC3643_Full_Implementation.md)
+| 参数 | 值 |
+|------|-----|
+| 网络 | Unichain Sepolia |
+| ChainID | 1301 |
+| RPC | `https://astrochain-sepolia.gateway.tenderly.co/5neqYQoinBsj3Cc3O36Dun` |
+| 浏览器 | https://sepolia.uniscan.xyz |
 
-## Test Results: 100% ✅
+---
 
-## Official Reference
+## 相关资源
 
-Based on: https://github.com/ERC-3643/ERC-3643
+- [官方规范](https://eips.ethereum.org/EIPS/eip-3643)
+- [官方实现](https://github.com/ERC-3643/ERC-3643)
+- [ONCHAINID](https://github.com/ERC-3643/ONCHAINID)
+
+---
+
+*实现时间: 2026-03-10*
