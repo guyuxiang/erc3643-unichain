@@ -1,14 +1,8 @@
-# Compiler files
+node_modules/
 cache/
 out/
-
-# Ignores development broadcast logs
-!/broadcast
-/broadcast/*/31337/
-/broadcast/**/dry-run/
-
-# Docs
-docs/
-
-# Dotenv file
-.env
+artifacts/
+vendor/ERC-3643/node_modules/
+*.zip
+.DS_Store
+vendor/

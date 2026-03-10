@@ -1,15 +1,24 @@
-# ERC-3643 Official Implementation - Unichain Sepolia
+# ERC-3643 Implementation on Unichain Sepolia
 
-> Complete ERC-3643 standard token deployment on Unichain Sepolia testnet
+> Complete ERC-3643 (T-REX) standard token deployment
 
 ## Overview
 
-This project implements the complete ERC-3643 (T-REX) standard for security tokens, including:
-- Identity Registry with KYC
-- Claim Topics Registry
-- Trusted Issuers Registry
-- Modular Compliance with country restrictions
-- Claim verification
+This project implements the complete ERC-3643 standard for security tokens on Unichain Sepolia testnet.
+
+## Project Structure
+
+```
+├── src/
+│   ├── custom-modules/      # Custom compliance modules
+│   │   ├── CountryRestrictModule.sol
+│   │   └── ClaimVerifyModule.sol
+│   ├── token/              # ERC-3643 Token contracts (from official repo)
+│   └── registry/           # Identity & Claim registries (from official repo)
+├── vendor/ERC-3643/       # Official ERC-3643 reference implementation
+├── docs/                  # Documentation
+└── foundry.toml           # Foundry configuration
+```
 
 ## Deployed Contracts
 
@@ -24,18 +33,6 @@ This project implements the complete ERC-3643 (T-REX) standard for security toke
 | TrustedIssuersRegistry | `0x622249bf42135e5C537E83def29141a9917B3d21` |
 | ClaimIssuer | `0xAE4dbD1D32479038e69506a8543bc501D8C7f4eE` |
 
-## Documentation
-
-- [Implementation Guide](./docs/ERC3643_Implementation_Guide.md)
-- [Complete Test Report](./docs/ERC3643_Complete_Test_Report.md)
-
-## Network
-
-- **Network**: Unichain Sepolia
-- **ChainID**: 1301
-- **RPC**: `https://astrochain-sepolia.gateway.tenderly.co/5neqYQoinBsj3Cc3O36Dun`
-- **Explorer**: https://sepolia.uniscan.xyz
-
 ## Compliance Rules
 
 | Country | Code | Rule |
@@ -44,19 +41,22 @@ This project implements the complete ERC-3643 (T-REX) standard for security toke
 | Germany | 276 | ❌ Cannot receive |
 | France | 250 | ✅ Normal |
 
-## Test Results: 100% Pass
+## Documentation
 
-- Token configuration: ✅
-- Identity Registry: ✅
-- KYC Registration: ✅
-- Token Minting: ✅
-- Claim Topics: ✅
-- Trusted Issuers: ✅
-- Claims Verification: ✅
-- Compliance Rules: ✅
+- [Implementation Guide](./docs/ERC3643_Implementation_Guide.md)
+- [Test Report](./docs/ERC3643_Final_Report.md)
 
-## Explorer Links
+## Network
 
-- [Token](https://sepolia.uniscan.xyz/address/0x6B286ebAfb5eDBd8D4552A1060fF2b0BC2b0EC51)
-- [IdentityRegistry](https://sepolia.uniscan.xyz/address/0x48966d61b20e7a680dfda96d53c9D7D6A566d3E9)
-- [ModularCompliance](https://sepolia.uniscan.xyz/address/0x2eef320EaD21bE8c767761187496aB465bBC5Dd3)
+- **Network**: Unichain Sepolia
+- **ChainID**: 1301
+- **RPC**: `https://astrochain-sepolia.gateway.tenderly.co/5neqYQoinBsj3Cc3O36Dun`
+- **Explorer**: https://sepolia.uniscan.xyz
+
+## Test Results: 100% ✅
+
+All components deployed and tested successfully.
+
+## Official Reference
+
+Based on: https://github.com/ERC-3643/ERC-3643
