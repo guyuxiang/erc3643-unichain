@@ -60,3 +60,8 @@ All components deployed and tested successfully.
 ## Official Reference
 
 Based on: https://github.com/ERC-3643/ERC-3643
+
+## Official Reference
+
+The official ERC-3643 implementation is available at:
+https://github.com/ERC-3643/ERC-3643
