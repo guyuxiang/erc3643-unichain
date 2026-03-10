@@ -1,8 +1,9 @@
 node_modules/
 cache/
-out/
 artifacts/
-vendor/ERC-3643/node_modules/
-*.zip
+typechain/
+typechain-types/
+dist/
+.env
+*.log
 .DS_Store
-vendor/

@@ -10,8 +10,10 @@
     "full": "npm run deploy && npm run register && npm run verify"
   },
   "devDependencies": {
-    "@nomicfoundation/hardhat-toolbox": "^2.0.0",
-    "hardhat": "^2.17.0",
-    "typescript": "^5.0.0"
+    "@nomicfoundation/hardhat-toolbox": "^2.0.2",
+    "@nomicfoundation/hardhat-verify": "^3.0.12",
+    "hardhat": "^2.28.6",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
   }
 }
