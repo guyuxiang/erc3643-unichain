@@ -4,8 +4,10 @@
   "description": "ERC-3643 Implementation on Unichain Sepolia",
   "scripts": {
     "compile": "hardhat compile",
-    "test": "hardhat test",
-    "verify": "npx hardhat run scripts/verify-erc3643.ts --network unichain"
+    "deploy": "npx hardhat run scripts/full-deploy.ts --network unichain",
+    "register": "npx hardhat run scripts/register-investors.ts --network unichain",
+    "verify": "npx hardhat run scripts/verify-erc3643.ts --network unichain",
+    "full": "npm run deploy && npm run register && npm run verify"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^2.0.0",
