@@ -1,0 +1,15 @@
+{
+  "name": "erc3643-unichain",
+  "version": "1.0.0",
+  "description": "ERC-3643 Implementation on Unichain Sepolia",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "verify": "npx hardhat run scripts/verify-erc3643.ts --network unichain"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^2.0.0",
+    "hardhat": "^2.17.0",
+    "typescript": "^5.0.0"
+  }
+}
